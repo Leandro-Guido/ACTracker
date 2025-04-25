@@ -1,3 +1,6 @@
+# pasta com as imagens dos autores
+atores/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
