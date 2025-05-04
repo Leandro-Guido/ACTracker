@@ -1,0 +1,3 @@
+python ./criar_dataset.py
+python ./encode_faces.py --encodings encodings.pickle --metodo hog
+python ./recognize_faces_video.py --encodings encodings.pickle --metodo hog --input mrbean.mkv --display 1

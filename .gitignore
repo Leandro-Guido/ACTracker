@@ -1,5 +1,9 @@
-# pasta com as imagens dos autores
-atores/
+# videos/filmes
+.mkv
+.mp4
+.avi
+.mov
+.wmv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
