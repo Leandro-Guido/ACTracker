@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import argparse
 
-def main(): 
+def main():
     # argumentos
     ap = argparse.ArgumentParser()
     ap.add_argument("-e", "--encodings", type=str, required=True, help="path para carregar os encodings")
