@@ -1,3 +1,18 @@
-python ./criar_dataset.py
-python ./encode_faces.py --encodings encodings.pickle --metodo hog
-python ./recognize_faces_video.py --encodings encodings.pickle --metodo hog --input mrbean.mkv --display 1
+
+# Frame Skip
+
+- filme do mr bean tem 64.000 frames aproximadamente
+- Execução com frame skip = 1 dá 24016 demorando 8h e 26m
+- Execução com frame skip = 2 dá 4813 demorando 1h e 40m
+- Execução com frame skip = 10 dá 2413 demorando 51m
+- Execução com frame skip = 20 dá 1205 demorando 17m
+- Execução com frame skip = 40 dá 596 demorando 13m
+- Execução com frame skip = 60 dá 401 demorando 8m 30s
+
+> python ./criar_dataset.py
+
+> python ./encode_faces.py --encodings encodings.pickle --metodo hog
+
+> python ./recognize_faces_video.py --encodings encodings.pickle --metodo hog --input mrbean.mkv --display 1
+
+> python ./cortar_filme.py --input mrbean.mkv

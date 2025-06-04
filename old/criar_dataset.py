@@ -2,12 +2,13 @@ import os
 import requests
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import argparse
 
 API_KEY = "db1895eca7f93065adaac585e98eba99" # TMDB API KEY
 BASE_URL = "https://api.themoviedb.org/3"
 
 # quantos threads usar para download paralelo
-MAX_WORKERS = 8
+MAX_WORKERS = 12
 
 def tmdb_get(path, **params):
     """faz uma requisição GET para a API do TMDB e retorna o JSON da resposta"""
@@ -80,5 +81,13 @@ def buscar_e_salvar_ator(actor_name):
         for _ in tqdm(as_completed(futures), total=len(futures), desc="Baixando imagens"):
             pass
 
+def main():
+
+    ap = argparse.ArgumentParser(description="Cria um dataset de atores a partir do TMDB.")
+    ap.add_argument("-a", "--actor", type=str, required=True, help="nome do ator a ser buscado")
+    args = vars(ap.parse_args())
+
+    buscar_e_salvar_ator(args["actor"])
+
 if __name__ == "__main__":
-    buscar_e_salvar_ator("Rowan Atkinson")
+    main()
