@@ -5,8 +5,10 @@
 *.mov
 *.wmv
 
-# pasta com imagens
+# pasta com imagens e filmes
 dataset/
+filmes/
+cortes/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

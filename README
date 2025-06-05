@@ -1,5 +1,33 @@
+### Exemplo de execução
+(frame skip é extremamente recomendado)
 
-# Frame Skip
+> python actracker.py --filme "Pulp Fiction" --actor "John Travolta" --frameskip 60
+
+Sistema de pastas necessarias para rodar o programa:
+```
+.
+├── filmes # colocar manualmente os filmes
+│   ├── filme I.mp4
+│   ├── filme II.mp4
+│   └── filme III.mp4
+├── dataset
+│   │── Primeiro Ator
+│   │   ├── foto_1.png
+│   │   └── foto_2.png
+│   └── Segundo Ator
+│       ├── foto_1.png
+│       ├── foto_2.png
+│       └── foto_3.png
+└── cortes
+    └── filme I
+        ├── parte_1.mp4
+        ├── parte_2.mp4
+        ├── parte_3.mp4
+        └── parte_4.mp4
+```
+
+
+### Notas para o Frame Skip
 
 - filme do mr bean tem 64.000 frames aproximadamente
 - Execução com frame skip = 1 dá 24016 demorando 8h e 26m
@@ -8,11 +36,3 @@
 - Execução com frame skip = 20 dá 1205 demorando 17m
 - Execução com frame skip = 40 dá 596 demorando 13m
 - Execução com frame skip = 60 dá 401 demorando 8m 30s
-
-> python ./criar_dataset.py
-
-> python ./encode_faces.py --encodings encodings.pickle --metodo hog
-
-> python ./recognize_faces_video.py --encodings encodings.pickle --metodo hog --input mrbean.mkv --display 1
-
-> python ./cortar_filme.py --input mrbean.mkv
