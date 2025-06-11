@@ -3,30 +3,6 @@
 
 > python actracker.py --filme "Pulp Fiction" --actor "John Travolta" --frameskip 60
 
-Sistema de pastas necessarias para rodar o programa:
-```
-.
-├── filmes # colocar manualmente os filmes
-│   ├── filme I.mp4
-│   ├── filme II.mp4
-│   └── filme III.mp4
-├── dataset
-│   │── Primeiro Ator
-│   │   ├── foto_1.png
-│   │   └── foto_2.png
-│   └── Segundo Ator
-│       ├── foto_1.png
-│       ├── foto_2.png
-│       └── foto_3.png
-└── cortes
-    └── filme I
-        ├── parte_1.mp4
-        ├── parte_2.mp4
-        ├── parte_3.mp4
-        └── parte_4.mp4
-```
-
-
 ### Notas para o Frame Skip
 
 - filme do mr bean tem 64.000 frames aproximadamente

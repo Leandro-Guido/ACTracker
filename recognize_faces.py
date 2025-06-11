@@ -1,49 +1,77 @@
 import face_recognition
 import imutils
-import pickle
 import cv2
 import numpy as np
-import argparse
-from tqdm import tqdm
+import multiprocessing
 
-def encontrar_tempo_de_tela_ator(ator, all_encodings, all_names, vs:cv2.VideoCapture, metodo, resize_width, threshold, frame_skip, display):
+def encontrar_tempo_de_tela_ator(ator, all_encodings, all_names, path_filme, metodo, resize_width, threshold, frame_skip, display, threads):
 
-    # progresso
-    total_frames = int(vs.get(cv2.CAP_PROP_FRAME_COUNT) / frame_skip)
-    pbar = tqdm(total=total_frames, desc="Processando vídeo", unit="frame")
-    tqdm.write(f"Total de frames no vídeo: {total_frames}")
+    # Verifica número total de frames
+    vs = cv2.VideoCapture(path_filme)
+    total_frames = int(vs.get(cv2.CAP_PROP_FRAME_COUNT))
+    vs.release()
 
-    frame_number = 0
+    # Calcula os intervalos de frames para cada processo
+    frames_per_thread = total_frames // threads
+    processes = []
+
+    queue = multiprocessing.Queue()
+
+    for i in range(threads):
+        start_frame = i * frames_per_thread
+        end_frame = (i + 1) * frames_per_thread - 1 if i != threads - 1 else total_frames - 1
+        p = multiprocessing.Process(target=process_video_segment, args=(i, ator, all_encodings, all_names, path_filme, metodo, resize_width, threshold, frame_skip, display, start_frame, end_frame, queue))
+        print(f"[INFO] Iniciando processo {i} para o ator '{ator}' do frame {start_frame} ao {end_frame}.")
+        p.start()
+        processes.append(p)
+
+    for p in processes:
+        p.join()
+
+    # Coletar resultados da fila
+    tempos = []
+    while not queue.empty():
+        tempos.append(queue.get())
+
+    print("[INFO] Todos os processos terminaram.")
+
+    return sum(tempos)
+
+
+def process_video_segment(proc_id, ator, all_encodings, all_names, path_filme, metodo, resize_width, threshold, frame_skip, display, start_frame, end_frame, queue):
+
+    # Abre o vídeo novamente
+    vs = cv2.VideoCapture(path_filme)
+    vs.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+
     frame_actor_count = 0
 
-    # loop sobre os frames do vídeo
-    while True:
-        vs.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+    frame_count = start_frame
+    window_name = f"Thread-{proc_id}"
+
+    while frame_count <= end_frame:
         ret, frame = vs.read()
         if not ret:
             break
 
-        # otimização: ignora frames muito escuros
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        if cv2.mean(gray)[0] < 20:
-            frame_number += frame_skip
-            pbar.update(1)
+        frame_count += 1
+        if frame_skip > 1 and frame_count % frame_skip != 0:
             continue
 
-        # redimensiona frame para acelerar o processamento
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        mean_brightness = cv2.mean(gray)[0]
+        if mean_brightness < 20:
+            continue
+
         frame_resized = imutils.resize(frame, width=resize_width)
         rgb = cv2.cvtColor(frame_resized, cv2.COLOR_BGR2RGB)
-        scale = frame.shape[1] / float(frame_resized.shape[1])
 
-        # detecta rostos
         boxes = face_recognition.face_locations(rgb, model=metodo)
+        actor_names = []
 
         if boxes:
-            # calcula os encodings de todos os rostos encontrados
-            frame_encodings = face_recognition.face_encodings(rgb, boxes, model="small")
-            actor_names = []
-
-            for encoding in frame_encodings:
+            encodings = face_recognition.face_encodings(rgb, boxes, model="small")
+            for encoding in encodings:
                 distances = face_recognition.face_distance(all_encodings, encoding) # compara com os encodings conhecidos
                 actor_name = "Unknown"
                 if len(distances) > 0:
@@ -55,73 +83,26 @@ def encontrar_tempo_de_tela_ator(ator, all_encodings, all_names, vs:cv2.VideoCap
                     frame_actor_count += 1
                 actor_names.append(actor_name)
 
-            # desenha os nomes
-            if display > 0:
-                for ((top, right, bottom, left), actor_name) in zip(boxes, actor_names):
-                    top = int(top * scale)
-                    right = int(right * scale)
-                    bottom = int(bottom * scale)
-                    left = int(left * scale)
-                    cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
-                    y = top - 15 if top - 15 > 15 else top + 15
-                    cv2.putText(frame, actor_name, (left, y), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
-
         if display > 0:
-            cv2.imshow("Frame", frame)
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord("q"):
+            for ((top, right, bottom, left), actor_name) in zip(boxes, actor_names):
+                top = int(top)
+                right = int(right)
+                bottom = int(bottom)
+                left = int(left)
+                cv2.rectangle(frame_resized, (left, top), (right, bottom), (0, 255, 0), 2)
+                y = top - 15 if top - 15 > 15 else top + 15
+                cv2.putText(frame_resized, actor_name, (left, y), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+
+            cv2.imshow(window_name, frame_resized)
+            if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
 
-        pbar.update(1)
-        frame_number += frame_skip
-
     # finalização
+    fps = vs.get(cv2.CAP_PROP_FPS)
+    vs.release()
     cv2.destroyAllWindows()
     print(f"Ator '{ator}' apareceu em {frame_actor_count} frames.")
 
-    fps = vs.get(cv2.CAP_PROP_FPS)
-    return (frame_actor_count / fps) * frame_skip
+    tempo_seg = (frame_actor_count / fps) * frame_skip
 
-def main():
-    # argumentos
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-e", "--encodings",    type=str,   required=True,  help="path para carregar os encodings")
-    ap.add_argument("-i", "--input",        type=str,   required=True,  help="path para o video de entrada")
-    ap.add_argument("-a", "--actor",        type=str,   required=True,  help="nome do ator a ser reconhecido no video")
-    ap.add_argument("-d", "--display",      type=int,   default=1,      help="exibir video (0 ou 1)")
-    ap.add_argument("-m", "--metodo",       type=str,   default="hog",  help="metodo de detecção facial `hog` ou `cnn`")
-    ap.add_argument("-r", "--resize_width", type=int,   default=500,    help="largura para redimensionar o video")
-    ap.add_argument("-t", "--threshold",    type=float, default=0.55,   help="distancia máxima aceitavel para correspondencia")
-    ap.add_argument("-f", "--frame_skip",   type=int,   default=1,      help="numero de frames a pular\n exemplo: frame_skip = 20 então pula 19, processa 1")
-    args = vars(ap.parse_args())
-
-    # carrega os encodings
-    with open(args["encodings"], "rb") as f:
-        data = pickle.load(f)
-
-    # abrir video
-    vs = cv2.VideoCapture(args["input"])
-    if not vs.isOpened():
-        raise ValueError(f"Erro ao abrir o video: {args['input']}")
-    
-    tempo_tela_seg = encontrar_tempo_de_tela_ator(
-        ator=args["actor"],
-        all_encodings=data["encodings"],
-        all_names=data["names"],
-        vs=vs,
-        metodo=args["metodo"],
-        resize_width=args["resize_width"],
-        threshold=args["threshold"],
-        frame_skip=args["frame_skip"],
-        display=args["display"]
-    )
-
-    print(f"Tempo total em tela do ator '{args['actor']}': {tempo_tela_seg:.2f} segundos.")
-    print(f"Tempo do filme: {vs.get(cv2.CAP_PROP_FRAME_COUNT) / vs.get(cv2.CAP_PROP_FPS):.2f} segundos.")
-    
-    # libera o video
-    vs.release()
-
-
-if __name__ == "__main__":
-    main()
+    queue.put(tempo_seg)
