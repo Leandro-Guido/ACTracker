@@ -61,10 +61,11 @@ def tempo_tela():
         )
 
         duracao_total = vs.get(cv2.CAP_PROP_FRAME_COUNT) / vs.get(cv2.CAP_PROP_FPS)
-        vs.release()
 
         print(f"Tempo total em tela do ator '{ator}': {tempo_tela_seg:.2f} segundos.")
         print(f"Tempo do filme: {vs.get(cv2.CAP_PROP_FRAME_COUNT) / vs.get(cv2.CAP_PROP_FPS):.2f} segundos.")
+        
+        vs.release()
 
         return jsonify({
             "ator": ator,
