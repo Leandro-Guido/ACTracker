@@ -1,18 +1,26 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import tmdb
 import encodefaces
 import recognize_faces
 import cv2
 import os
 import multiprocessing
+import time
+
 
 # Configuração do Ngrok
 # ngrok http 5000
 
 app = Flask(__name__)
 
-@app.route('/tempo_tela', methods=['POST'])
+CORS(app, origins=["http://localhost:3000"])
+
+@app.route('/tempo_tela', methods=['POST', 'OPTIONS'])
 def tempo_tela():
+    if request.method == 'OPTIONS':
+        return '', 200
+
     data = request.json
     ator = data.get("ator")
     filme = data.get("filme")
@@ -47,6 +55,7 @@ def tempo_tela():
         if not vs.isOpened():
             return jsonify({"erro": f"Erro ao abrir o vídeo '{filme}.mp4'"}), 500
 
+        start = time.time()
         tempo_tela_seg = recognize_faces.encontrar_tempo_de_tela_ator(
             ator=ator,
             all_encodings=encodings,
@@ -59,6 +68,7 @@ def tempo_tela():
             display=display,
             threads=threads
         )
+        end = time.time()
 
         duracao_total = vs.get(cv2.CAP_PROP_FRAME_COUNT) / vs.get(cv2.CAP_PROP_FPS)
 
@@ -71,7 +81,8 @@ def tempo_tela():
             "ator": ator,
             "filme": filme,
             "tempo_em_tela_segundos": round(tempo_tela_seg, 2),
-            "duracao_total_segundos": round(duracao_total, 2)
+            "duracao_total_segundos": round(duracao_total, 2),
+            "tempo_de_execucao_segundos": round(end - start, 2)
         })
 
     except Exception as e:

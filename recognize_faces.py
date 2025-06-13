@@ -47,7 +47,19 @@ def process_video_segment(proc_id, ator, all_encodings, all_names, path_filme, m
     frame_actor_count = 0
 
     frame_count = start_frame
-    window_name = f"Thread-{proc_id}"
+    if display > 0:
+        window_name = f"Thread-{proc_id}"
+
+        # definir posiçao da janela
+        cols = 3
+        win_width = 400
+        win_height = 300
+        x = (proc_id % cols) * win_width
+        y = (proc_id // cols) * win_height
+
+        cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(window_name, win_width, win_height)
+        cv2.moveWindow(window_name, x, y)
 
     while frame_count <= end_frame:
         ret, frame = vs.read()
