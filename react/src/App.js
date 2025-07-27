@@ -107,70 +107,10 @@ function App() {
         return newProgress;
       });
     }, 200);
-
-    // const analyzeData = async () => {
-    //   // 1. Iniciar o estado de carregamento e progresso
-    //   setLoading(true);
-    //   setProgress(0); // O progresso será atualizado pelo backend ou deixado em 0 e só mostrar o spinner
-
-    //   // Opcional: Se quiser uma barra de progresso real, você precisaria de um endpoint no backend que reportasse o progresso
-    //   // Caso contrário, a barra de progresso pode apenas "girar" ou ir até 99% e finalizar ao receber a resposta.
-    //   // Por simplicidade, vamos considerar que o progresso será atualizado apenas no início e no fim.
-    //   // Se quiser um progresso que avança, você precisaria de WebSockets ou long-polling, o que é mais complexo.
-    //   // Para a maioria dos casos de uso, um spinner ou barra de progresso indefinida é suficiente durante a requisição.
-
-    //   try {
-    //     // 2. Fazer a requisição à API
-    //     // Substitua '/api/analisar-dados' pelo endpoint real da sua API
-    //     // E 'corpoDaRequisicao' pelos dados que você precisa enviar (ex: um arquivo, texto, etc.)
-    //     const response = await fetch('/api/analisar-dados', {
-    //       method: 'POST', // Ou 'GET', 'PUT', dependendo da sua API
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         // Se precisar de autenticação, adicione aqui (ex: 'Authorization': `Bearer ${token}`)
-    //       },
-    //       body: JSON.stringify({ /* seus dados aqui */ }), // Se você estiver enviando dados no corpo da requisição
-    //     });
-
-    //     // 3. Lidar com a resposta da API
-    //     if (!response.ok) {
-    //       // Se a resposta não for bem-sucedida (ex: status 400, 500)
-    //       const errorData = await response.json(); // Tenta ler o erro do corpo da resposta
-    //       throw new Error(errorData.message || 'Erro ao processar a requisição.');
-    //     }
-
-    //     // 4. Converter a resposta para JSON
-    //     const data = await response.json();
-
-    //     // 5. Atualizar o estado com os resultados da API
-    //     setProgress(100); // Marca o progresso como completo
-    //     setActorStats(data.resultados); // Assumindo que a API retorna um objeto com 'resultados'
-    //     setShowResults(true);
-
-    //   } catch (error) {
-    //     // 6. Lidar com erros na requisição
-    //     console.error('Erro na requisição da API:', error);
-    //     // Você pode definir um estado de erro para mostrar uma mensagem ao usuário
-    //     // setErrorState(error.message);
-    //     setProgress(0); // Reseta o progresso em caso de erro
-    //     // Opcional: Reverter estados de carregamento se precisar
-    //   } finally {
-    //     // 7. Finalizar o estado de carregamento, independentemente do sucesso ou erro
-    //     setLoading(false);
-    //     // Remover a classe de largura fixa, se aplicável
-    //     if (analyzeButtonRef.current) {
-    //       analyzeButtonRef.current.classList.remove("button-fixed-width");
-    //     }
-    //   }
-    // };
-
-    // No seu projeto real, você faria algo semelhante para adicionar e remover a classe
-    // ao iniciar e concluir a chamada da API.
   };
 
-  const TMDB_BEARER_TOKEN =
-    "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMDAxZTdlNzI5ZmZjNWRhYzdiYmE5NTI0ZWQ2NDgxZSIsIm5iZiI6MTY1NTQ5NTk2My45MjEsInN1YiI6IjYyYWNkZDFiNWFiODFhMDA4YjgzY2Y3YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.KYEg81JxLA_ObhIezsOX9yBxzFRWm7eocp1asItmMTQ";
-
+  const TMDB_BEARER_TOKEN = // removido para deixar no github
+    
   const fetchActorsForMovie = async (movieTitle) => {
     if (!movieTitle) {
       setAvailableActors([]);
