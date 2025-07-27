@@ -1,0 +1,17 @@
+tipo,filme,threads,frame_skip,tempo_execucao,tempo_em_tela,duracao_total
+forte_threads,Cut 32 Um Sonho de Liberdade,1,60,161.49,192.69,1920.0
+forte_threads,Cut 32 Um Sonho de Liberdade,2,60,124.53,192.69,1920.0
+forte_threads,Cut 32 Um Sonho de Liberdade,4,60,126.38,192.69,1920.0
+forte_threads,Cut 32 Um Sonho de Liberdade,8,60,134.08,192.69,1920.0
+forte_threads,Cut 32 Um Sonho de Liberdade,12,60,141.86,192.69,1920.0
+forte_frame_skip,Cut 16 Um Sonho de Liberdade,12,1,352.56,93.13,960.0
+forte_frame_skip,Cut 16 Um Sonho de Liberdade,12,2,201.78,93.18,960.0
+forte_frame_skip,Cut 16 Um Sonho de Liberdade,12,10,101.79,94.26,960.0
+forte_frame_skip,Cut 16 Um Sonho de Liberdade,12,20,94.11,92.59,960.0
+forte_frame_skip,Cut 16 Um Sonho de Liberdade,12,40,90.97,95.09,960.0
+forte_frame_skip,Cut 16 Um Sonho de Liberdade,12,90,88.26,93.84,960.0
+fraca,Cut 4 Um Sonho de Liberdade,1,60,43.96,50.05,240.03
+fraca,Cut 8 Um Sonho de Liberdade,2,60,56.25,77.58,480.02
+fraca,Cut 16 Um Sonho de Liberdade,4,60,77.81,87.59,960.0
+fraca,Cut 32 Um Sonho de Liberdade,8,60,131.34,192.69,1920.0
+fraca,Cut 48 Um Sonho de Liberdade,12,60,181.9,382.88,2880.0
